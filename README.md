@@ -1,4 +1,4 @@
-# Simulador VLT Santa Maria
+# Simulador VLT Santa Maria Front End
 
 Projeto de simulação de viabilidade para o sistema de Veículo Leve sobre Trilhos (VLT) em Santa Maria - RS.
 
@@ -27,6 +27,3 @@ A interface web consome uma API REST para buscar os dados simulados de trajeto.
 ## Requisitos
 
 - Backend disponível no repositório URL: `https://github.com/jcsalerno/ufsm-memorial`
-
-
-# memorial-front

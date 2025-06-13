@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Simulador VLT Santa Maria</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    h2 {
+      color: #fff;
+      margin-bottom: 30px;
+      font-weight: 600;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    label {
+      margin-top: 20px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    select {
+      width: 300px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: none;
+      font-size: 16px;
+      margin-top: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      outline: none;
+      transition: box-shadow 0.3s ease;
+    }
+
+    select:focus {
+      box-shadow: 0 4px 12px rgba(255,255,255,0.8);
+    }
+
+    button {
+      margin-top: 30px;
+      padding: 12px 30px;
+      font-size: 18px;
+      font-weight: 600;
+      color: #4facfe;
+      background: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #4facfe;
+      color: #fff;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+    }
+
+    pre {
+      margin-top: 30px;
+      padding: 20px;
+      width: 320px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      font-size: 16px;
+      line-height: 1.4;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      white-space: pre-wrap;
+      color: #222;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Simulador VLT Santa Maria</h2>
+
+<label for="origem">Estação Origem:</label>
+<select id="origem">
+  <option value="Centro">Centro</option>
+  <option value="Camobi">Camobi</option>
+  <option value="UFSM">UFSM</option>
+</select>
+
+<label for="destino">Estação Destino:</label>
+<select id="destino">
+  <option value="Centro">Centro</option>
+  <option value="Camobi">Camobi</option>
+  <option value="UFSM">UFSM</option>
+</select>
+
+<button id="simularBtn">Simular</button>
+
+<pre id="resultado"></pre>
+
+<script>
+  document.getElementById('simularBtn').addEventListener('click', () => {
+    const origem = document.getElementById('origem').value;
+    const destino = document.getElementById('destino').value;
+
+    if (!origem || !destino) {
+      document.getElementById('resultado').textContent = 'Por favor, selecione origem e destino.';
+      return;
+    }
+
+    if (origem === destino) {
+      document.getElementById('resultado').textContent = 'Origem e destino não podem ser iguais.';
+      return;
+    }
+
+    fetch(`http://localhost:8080/api/v1/simulador?origem=${encodeURIComponent(origem)}&destino=${encodeURIComponent(destino)}`)
+      .then(res => {
+        if (!res.ok) throw new Error('Erro na requisição ou rota não encontrada');
+        return res.json();
+      })
+      .then(data => {
+        document.getElementById('resultado').textContent =
+          `📍 Rota simulada: ${data.origem} ➝ ${data.destino}\n` +
+          `🕒 Tempo estimado (VLT): ${data.tempoVLT.toFixed(1)} minutos\n` +
+          `🚌 Tempo estimado (ônibus): ${data.tempoOnibus.toFixed(1)} minutos\n` +
+          `🌱 CO₂ evitado: ${data.co2Evitar.toFixed(2)} kg\n` +
+          `💡 Economia de tempo: ${data.economiaTempo.toFixed(1)} minutos`;
+      })
+      .catch(err => {
+        document.getElementById('resultado').textContent = 'Erro: ' + err.message;
+      });
+  });
+</script>
+
+</body>
+</html>
